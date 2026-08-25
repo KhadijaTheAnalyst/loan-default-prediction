@@ -1,0 +1,14 @@
+# Data
+*.csv
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
