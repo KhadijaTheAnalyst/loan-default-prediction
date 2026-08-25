@@ -9,57 +9,56 @@ Lenders need to assess default risk at the point of loan application, using only
 ## Dataset
 
 - 148,670 rows, 34 original columns
-- - Binary target: `Status` (0 = no default, 1 = default), ~75% / 25% class split
-  - - Mix of borrower financials, loan structure, property/collateral details, and credit history
-   
-    - ## Approach
-   
-    - ### 1. Leakage detection
-    - Three columns (`rate_of_interest`, `Interest_rate_spread`, `Upfront_charges`) were missing almost exclusively for defaulted loans, a sign they're only populated *after* loan origination, and therefore not legitimately available at prediction time. These were dropped.
-   
-    - ### 2. Missingness as a feature
-    - Other columns with missing values (`property_value`, `LTV`, `dtir1`, `income`) were plausibly missing due to incomplete applications, information that *would* be available at decision time. Rather than discarding this signal, binary `_missing` flags were engineered before median imputation.
-   
-    - ### 3. Encoding & preprocessing
-    - - Ordinal encoding for `age` (preserving the natural bracket order)
-      - - One-hot encoding (with `drop_first=True`) for 20 nominal categorical columns
-        - - Feature scaling (`StandardScaler`) for the linear model and neural network
-         
-          - ### 4. Models trained
-          - | Model | Notes |
-          - |---|---|
-          - | Logistic Regression | Baseline + `class_weight='balanced'` + threshold tuning sweep |
-          - | Random Forest | 100 trees, `class_weight='balanced'` |
-          - | Neural Network (Keras) | 2 hidden layers (64/32 units), dropout, `class_weight` |
-         
-          - ### 5. Interpretability
-          - SHAP (`TreeExplainer`) applied to the Random Forest model to identify and visualize feature importance and interaction effects.
-         
-          - ## Results
-         
-          - | Metric | Logistic Regression (threshold 0.35) | Random Forest | Neural Network |
-          - |---|---|---|---|
-          - | Accuracy | 86.3% | **89.1%** | 86.2% |
-          - | Precision | 83.0% | **94.9%** | 71.3% |
-          - | Recall | 56.0% | 59.0% | **73.4%** |
-          - | F1 | 66.9% | 72.7% | 72.4% |
-          - | ROC-AUC | 0.745 | 0.790 | **0.819** |
-         
-          - **No single model dominates.** Random Forest offers the highest precision (fewest false alarms), while the neural network achieves the best recall and overall ranking ability (ROC-AUC). In a real lending context, the right choice depends on the relative cost of a missed defaulter versus a false alarm.
-         
-          - ## Key findings
-         
-          - - **Data-missingness flags were the strongest predictors overall** (confirmed via SHAP), more informative than most raw feature values, and legitimately available at application time (unlike the leaked columns that were dropped).
-            - - **`Credit_Score` showed surprisingly little predictive power**, contradicting the intuitive assumption that it would dominate.
-              - - **`income` has a non-linear, diminishing-returns relationship** with default risk, strongly protective at low income levels, flattening out above roughly $6-7k.
-               
-                - ## How to run
-               
-                - 1. Download the dataset from Kaggle and place `Loan_Default.csv` in the project root.
-                  2. 2. Open `loan_default_project.ipynb` in Google Colab or Jupyter.
-                     3. 3. Run cells sequentially: the notebook follows the same order as this README (leakage check, cleaning, encoding, split, modeling, SHAP).
-                       
-                        4. ## Tech stack
-                       
-                        5. `pandas` · `numpy` · `scikit-learn` · `TensorFlow/Keras` · `SHAP` · `seaborn` / `matplotlib`
-                        6. 
+- Binary target: `Status` (0 = no default, 1 = default), ~75% / 25% class split
+- Mix of borrower financials, loan structure, property/collateral details, and credit history
+
+## Approach
+
+### 1. Leakage detection
+Three columns (`rate_of_interest`, `Interest_rate_spread`, `Upfront_charges`) were missing almost exclusively for defaulted loans, a sign they're only populated *after* loan origination, and therefore not legitimately available at prediction time. These were dropped.
+
+### 2. Missingness as a feature
+Other columns with missing values (`property_value`, `LTV`, `dtir1`, `income`) were plausibly missing due to incomplete applications, information that *would* be available at decision time. Rather than discarding this signal, binary `_missing` flags were engineered before median imputation.
+
+### 3. Encoding & preprocessing
+- Ordinal encoding for `age` (preserving the natural bracket order)
+- One-hot encoding (with `drop_first=True`) for 20 nominal categorical columns
+- Feature scaling (`StandardScaler`) for the linear model and neural network
+
+### 4. Models trained
+| Model | Notes |
+|---|---|
+| Logistic Regression | Baseline + `class_weight='balanced'` + threshold tuning sweep |
+| Random Forest | 100 trees, `class_weight='balanced'` |
+| Neural Network (Keras) | 2 hidden layers (64/32 units), dropout, `class_weight` |
+
+### 5. Interpretability
+SHAP (`TreeExplainer`) applied to the Random Forest model to identify and visualize feature importance and interaction effects.
+
+## Results
+
+| Metric | Logistic Regression (threshold 0.35) | Random Forest | Neural Network |
+|---|---|---|---|
+| Accuracy | 86.3% | **89.1%** | 86.2% |
+| Precision | 83.0% | **94.9%** | 71.3% |
+| Recall | 56.0% | 59.0% | **73.4%** |
+| F1 | 66.9% | 72.7% | 72.4% |
+| ROC-AUC | 0.745 | 0.790 | **0.819** |
+
+**No single model dominates.** Random Forest offers the highest precision (fewest false alarms), while the neural network achieves the best recall and overall ranking ability (ROC-AUC). In a real lending context, the right choice depends on the relative cost of a missed defaulter versus a false alarm.
+
+## Key findings
+
+- **Data-missingness flags were the strongest predictors overall** (confirmed via SHAP), more informative than most raw feature values, and legitimately available at application time (unlike the leaked columns that were dropped).
+- **`Credit_Score` showed surprisingly little predictive power**, contradicting the intuitive assumption that it would dominate.
+- **`income` has a non-linear, diminishing-returns relationship** with default risk, strongly protective at low income levels, flattening out above roughly $6-7k.
+
+## How to run
+
+1. Download the dataset from Kaggle and place `Loan_Default.csv` in the project root.
+2. Open `loan_default_project.ipynb` in Google Colab or Jupyter.
+3. Run cells sequentially: the notebook follows the same order as this README (leakage check, cleaning, encoding, split, modeling, SHAP).
+
+## Tech stack
+
+`pandas` · `numpy` · `scikit-learn` · `TensorFlow/Keras` · `SHAP` · `seaborn` / `matplotlib`
