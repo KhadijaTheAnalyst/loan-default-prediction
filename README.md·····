@@ -1,3 +1,5 @@
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/KhadijaTheAnalyst/loan-default-prediction/blob/main/loan_default_project.ipynb)
+
 # Loan Default Prediction
 
 A machine learning project predicting whether a mortgage loan applicant will default, using the [Kaggle Loan Default Dataset](https://www.kaggle.com/datasets/yasserh/loan-default-dataset) (~148,670 loans, 34 original features).
