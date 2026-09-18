@@ -3,7 +3,6 @@
 Predicting mortgage loan default on a real-world dataset of ~148,670 loans - not just fitting a model, but working out why over 40% of some columns were missing before deciding what to do about it, and tuning the decision threshold to match what actually matters in a lending context.
 
 ![SHAP summary plot](visuals/shap_summary.png)
-*(Replace this with a screenshot from your notebook - the SHAP summary plot or the confusion matrix works well. Export it as a PNG, commit it to a visuals/ folder, and update the path above.)*
 
 ---
 
